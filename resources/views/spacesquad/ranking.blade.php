@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+
+    <!-- Scripts -->
+    <script src="{{ mix('js/app.js') }}" defer></script>
+</head>
+<body>
+@include('navigation-menu')
+
+
+<div>
+    <p>Most Liked Users</p>
+    <div class="flex flex-col flex-wrap justify-center md:flex-row mt-10">
+        @foreach($mostLikedUsers as $user)
+            <div class=" rounded overflow-hidden shadow-lg m-4 bg-gray-100 md:w-1/6 lg:w-1/6" >
+                <img class="w-full" src="{{ $user['profile_image']['medium'] }}" alt="Profile-pic">
+                <div class="px-6 py-4  border-b-2">
+                    <a class="font-bold text-xl mb-2" href="{{ $user['links']['html'] }}">{{ $user['username'] }}</a>
+                    </div>
+                <div class="px-6 py-4">
+                    <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">{{ $user['total_photos'] }} photos</span>
+                    <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">{{ $user['total_likes'] }} likes</span>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+<hr><br>
+<div>
+    <p>Most Liked Photos</p>
+    <div class="flex flex-col flex-wrap justify-center md:flex-row mt-10">
+        @foreach($mostLikedPhotos as $photo)
+            <div class=" rounded overflow-hidden shadow-lg m-4 bg-gray-100 md:w-1/6 lg:w-1/6" >
+                <img class="w-full" src="{{ $photo['urls']['regular'] }}" alt="Profile-pic">
+                <div class="px-6 py-4  border-b-2">
+                    <a class="font-bold text-xl mb-2" href="{{ $photo['links']['html'] }}">{{ $photo['alt_description']}}</a>
+                    <br>
+                    <a class="text-grey-darker text-base" href="{{ $photo['user']['links']['html'] }}">
+                        {{ $photo['user']['username'] }}
+                    </a>
+                </div>
+                <div class="px-6 py-4">
+                    <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">{{ $photo['likes'] }} likes</span>
+                    @if(isset($photo['views']))
+                        <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">{{ $photo['views'] }} views</span>
+                    @endif
+                    @if(isset($photo['downloads']))
+                        <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">{{ $photo['downloads'] }} downloads</span>
+                    @endif
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+
+</body>
+</html>
+
+

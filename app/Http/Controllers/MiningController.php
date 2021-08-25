@@ -32,7 +32,13 @@ class MiningController extends Controller
 
     }
 
+    public function ranking(){
 
+        $mostLikedPhotos = UnspalshPhotos::all()->sortByDesc('likes')->take(10);
+        $mostLikedUsers = UnspalshUsers::all()->sortByDesc('total_likes')->take(10);
+
+        return view('spacesquad.ranking')->with('mostLikedUsers',$mostLikedUsers)->with('mostLikedPhotos',$mostLikedPhotos);
+    }
 
     private function saveUsers($users){
         foreach($users as $user){

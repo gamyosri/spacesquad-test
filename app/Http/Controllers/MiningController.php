@@ -44,7 +44,6 @@ class MiningController extends Controller
         foreach($users as $user){
             if(!UnspalshUsers::find($user['id'])){
             UnspalshUsers::create($user);
-                var_dump('user saved');
             }
         }
     }
@@ -54,7 +53,6 @@ class MiningController extends Controller
             //dd($photo);
             if (!UnspalshPhotos::find($photo['id'])){
                 UnspalshPhotos::create($photo);
-                var_dump('photo saved');
             }
         }
     }

@@ -6,13 +6,13 @@ use App\Models\UnspalshPhotos;
 use App\Models\UnspalshUsers;
 use App\Models\User;
 use GuzzleHttp\Client;
-use Http;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
 
 class MiningJob implements ShouldQueue
 {
@@ -35,7 +35,7 @@ class MiningJob implements ShouldQueue
      */
     public function handle()
     {
-        //$this->MineUsers();
+        $this->MineUsers();
         $this->MinePhotos();
     }
 
@@ -52,15 +52,15 @@ class MiningJob implements ShouldQueue
     {
         $existingUsers = UnspalshUsers::all();
         $existingUsers->each(function ($user) {
-            $photos = Http::acceptJson()
-                ->get('https://api.unsplash.com/photos/JMHVHptLC4g',
-                    ['client_id' => env("UNSPLASH_API_KEY")])->body();
-            $photos = json_decode($photos);
-            foreach ($photos as $photo) {
+            $response = Http::acceptJson()
+                ->get($user->links['photos'], ['client_id' => \Config::get('ApiKeys.' . rand(1, 5))]);
+
+            $photos = $response->collect();
+
+            $photos->each(function ($photo) {
                 if (!UnspalshPhotos::find($photo['id']))
                     UnspalshPhotos::create($photo);
-            };
+            });
         });
     }
-
 }

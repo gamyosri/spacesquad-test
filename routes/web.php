@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::middleware(['auth:sanctum', 'verified'])->get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+
+
+
+
+
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/', function () {  return view('spacesquad.search'); })->name('dashboard');
+    Route::get('/search','App\Http\Controllers\MiningController@search')->name('search');
+    Route::get('/top10','App\Http\Controllers\MiningController@ranking')->name('top10');
+});

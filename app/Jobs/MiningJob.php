@@ -41,25 +41,25 @@ class MiningJob implements ShouldQueue
 
     public function MineUsers()
     {
-        $existingPhotos = UnspalshPhotos::all();
-        $existingPhotos->each(function ($photo) {
-            if (!UnspalshUsers::find($photo->user['id']))
+        UnspalshPhotos::all()->each(function ($photo) {
+            if (!UnspalshUsers::find($photo->user['id'])) {
+                $user = $photo->user;
+                $user['recognition'] = 'auto';
                 UnspalshUsers::create($photo->user);
+            }
         });
     }
 
     public function MinePhotos()
     {
-        $existingUsers = UnspalshUsers::all();
-        $existingUsers->each(function ($user) {
-            $response = Http::acceptJson()
-                ->get($user->links['photos'], ['client_id' => \Config::get('ApiKeys.' . rand(1, 5))]);
-
-            $photos = $response->collect();
-
-            $photos->each(function ($photo) {
-                if (!UnspalshPhotos::find($photo['id']))
+        UnspalshUsers::all()->each(function ($user) {
+            $response = Http::acceptJson()->get($user->links['photos'], ['client_id' => \Config::get('ApiKeys.' . rand(1, 5))]);
+            $response->collect()->each(function ($photo) {
+                if (!UnspalshPhotos::find($photo['id'])) {
+                    $photo['recognition'] = 'auto';
+                    dd($photo);
                     UnspalshPhotos::create($photo);
+                }
             });
         });
     }

@@ -48,6 +48,7 @@ class MiningController extends Controller
     {
         foreach ($users as $user) {
             if (!UnspalshUsers::find($user['id'])) {
+                $user['recognition'] = 'manual';
                 UnspalshUsers::create($user);
             }
         }
@@ -57,6 +58,7 @@ class MiningController extends Controller
     {
         foreach ($photos as $photo) {
             if (!UnspalshPhotos::find($photo['id'])) {
+                $photo['recognition'] = 'manual';
                 UnspalshPhotos::create($photo);
             }
         }

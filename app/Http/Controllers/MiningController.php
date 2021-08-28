@@ -12,25 +12,33 @@ use Unsplash\Exception;
 
 class MiningController extends Controller
 {
+    private $keyIndex =1;
 
     public function search(Request $request)
     {
-           $this->initClient();
-
+        HttpClient::init([
+            'applicationId' => \Config::get('ApiKeys.'. $this->keyIndex),
+            'utmSource' => 'SPACESQUAD',
+        ]);
         $search = $request['search-term'];
         $page = 1;
         $per_page = 30;
 
         try {
-            $photos = Search::photos($search, $page, $per_page);
             $users = Search::users($search, $page, $per_page);
+            $this->saveUsers($users->getResults());
         }catch (Exception $e){
-            ApiKeyRotator::initClient();
+            $this->setKeyIndex();
             $this->search($request);
         }
 
-            $this->saveUsers($users->getResults());
+        try {
+            $photos = Search::photos($search, $page, $per_page);
             $this->savePhotos($photos->getResults());
+        }catch (Exception $e){
+            $this->setKeyIndex();
+            $this->search($request);
+        }
 
         return view('spacesquad.search')->with('users', $users)->with('photos', $photos);
 
@@ -64,11 +72,7 @@ class MiningController extends Controller
         }
     }
 
-    public function initClient() {
-        HttpClient::init([
-            'applicationId' => \Config::get('ApiKeys.'.rand(1,5)),
-            'utmSource' => 'SPACESQUAD'
-        ]);
+    public function setNextKeyIndex(){
+        $this->keyIndex++ > count(\Config::get('ApiKeys')) ? $this->keyIndex = 1 : $this->keyIndex++;
     }
-
 }
